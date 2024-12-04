@@ -7,18 +7,29 @@ import java.lang.reflect.InvocationTargetException;
 public abstract class AbstractBeansFactory extends DefaultSingletonBeanRegistry implements BeansFactory {
 
 	@Override
-	public Object getBean(String name) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+	public Object getBean(String name) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 		// 获取bean单利，没有就注册
 		Object bean = getSingleton(name);
 		if (bean != null) {
 			return bean;
 		}
 
-		BeanDefinition beanDefiniton = getBeanDefinition(name);
-		return createBean(name, beanDefiniton);
+		BeanDefinition beanDefinition = getBeanDefinition(name);
+		return createBean(name, beanDefinition, null);
+	}
+
+	@Override
+	public Object getBean(String name, Object...args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException {
+		Object bean = getSingleton(name);
+		if (bean != null) {
+			return bean;
+		}
+
+		BeanDefinition beanDefinition = getBeanDefinition(name);
+		return createBean(name, beanDefinition, args);
 	}
 
 	protected abstract BeanDefinition getBeanDefinition(String beanName) throws RuntimeException;
 
-	protected abstract Object createBean(String beanName, BeanDefinition beanDefinition) throws RuntimeException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException;
+	protected abstract Object createBean(String beanName, BeanDefinition beanDefinition, Object[] objects) throws RuntimeException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException;
 }
